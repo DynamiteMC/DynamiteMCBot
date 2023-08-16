@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"fmt"
 	"gobot/config"
 	"strings"
 
@@ -12,6 +13,7 @@ type Command struct {
 	Name        string
 	Description string
 	Execute     func(*events.MessageCreate, []string)
+	Permissions discord.Permissions
 }
 
 func CreateMessage(e *events.MessageCreate, content string) {
@@ -27,6 +29,10 @@ func Handle(message *events.MessageCreate) {
 	args = args[1:]
 	command := commands[cmd]
 	if command.Execute == nil {
+		return
+	}
+	fmt.Println(message.Client().Caches().MemberPermissions(*message.Message.Member))
+	if !message.Client().Caches().MemberPermissions(*message.Message.Member).Has(command.Permissions) {
 		return
 	}
 	command.Execute(message, args)

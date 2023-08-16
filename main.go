@@ -11,6 +11,7 @@ import (
 
 	"github.com/disgoorg/disgo"
 	"github.com/disgoorg/disgo/bot"
+	"github.com/disgoorg/disgo/cache"
 	"github.com/disgoorg/disgo/events"
 	"github.com/disgoorg/disgo/gateway"
 )
@@ -29,8 +30,12 @@ func main() {
 				gateway.IntentMessageContent,
 			),
 		),
-		bot.WithEventListenerFunc(func(e *events.MessageCreate) {
-			commands.Handle(e)
+		bot.WithCacheConfigOpts(
+			cache.WithCaches(cache.FlagGuilds|cache.FlagMembers|cache.FlagRoles),
+		),
+		bot.WithEventListenerFunc(commands.Handle),
+		bot.WithEventListenerFunc(func(events.Ready) {
+			fmt.Println("Bot is online.")
 		}),
 	)
 	if err != nil {
