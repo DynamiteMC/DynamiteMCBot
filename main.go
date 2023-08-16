@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+
 	"gobot/commands"
 	"gobot/config"
 	"os"
@@ -26,15 +27,14 @@ func main() {
 			gateway.WithIntents(
 				gateway.IntentGuilds,
 				gateway.IntentGuildMessages,
-				gateway.IntentDirectMessages,
 				gateway.IntentMessageContent,
 			),
 		),
 		bot.WithCacheConfigOpts(
-			cache.WithCaches(cache.FlagGuilds|cache.FlagMembers|cache.FlagRoles),
+			cache.WithCaches(cache.FlagGuilds|cache.FlagRoles),
 		),
 		bot.WithEventListenerFunc(commands.Handle),
-		bot.WithEventListenerFunc(func(events.Ready) {
+		bot.WithEventListenerFunc(func(*events.Ready) {
 			fmt.Println("Bot is online.")
 		}),
 	)

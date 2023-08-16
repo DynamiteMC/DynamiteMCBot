@@ -1,0 +1,44 @@
+package commands
+
+import (
+	"fmt"
+	"gobot/config"
+
+	"github.com/disgoorg/disgo/discord"
+	"github.com/disgoorg/disgo/events"
+	"github.com/disgoorg/snowflake/v2"
+)
+
+var unmute = Command{
+	Name:        "unmute",
+	Description: "Unmute a member",
+	Permissions: discord.PermissionMuteMembers,
+	Aliases:     []string{"unsilence", "unshush"},
+	Execute: func(message *events.MessageCreate, args []string) {
+		memberId := args[0]
+		if memberId == "" {
+			return
+		}
+		id := ParseMention(memberId)
+		if id == 0 {
+			CreateMessage(message, "Failed to parse member", true)
+			return
+		}
+		if !HasRole(message.Client(), *message.GuildID, id, config.Config.MuteRole) {
+			CreateMessage(message, "Member is not silenced.", true)
+			return
+		}
+		err := message.Client().Rest().RemoveMemberRole(*message.GuildID, id, snowflake.ID(config.Config.MuteRole))
+		if err != nil {
+			CreateMessage(message, "Failed to unmute member", true)
+			return
+		}
+		var tag string
+		member, err := message.Client().Rest().GetMember(*message.GuildID, id)
+		if err != nil {
+			tag = "Unknown#0000"
+		}
+		tag = member.User.Tag()
+		CreateMessage(message, fmt.Sprintf("Unsilenced member %s.", tag), true)
+	},
+}
