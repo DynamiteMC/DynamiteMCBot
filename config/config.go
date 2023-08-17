@@ -6,10 +6,11 @@ import (
 )
 
 type ConfigS struct {
-	ID       int64  `json:"id"`
-	Token    string `json:"token"`
-	Prefix   string `json:"prefix"`
-	MuteRole int64  `json:"mute_role"`
+	ID         int64  `json:"id"`
+	Token      string `json:"token"`
+	Prefix     string `json:"prefix"`
+	InfoPrefix string `json:"info_prefix"`
+	MuteRole   int64  `json:"mute_role"`
 }
 
 var Config ConfigS
