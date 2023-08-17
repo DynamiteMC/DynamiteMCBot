@@ -9,7 +9,7 @@ import (
 	"github.com/disgoorg/snowflake/v2"
 )
 
-var Commands_unmute = Command{
+var Command_unmute = Command{
 	Name:        "unmute",
 	Description: "Unmute a member",
 	Permissions: discord.PermissionMuteMembers,
