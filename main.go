@@ -35,7 +35,7 @@ func main() {
 		),
 		bot.WithEventListenerFunc(commands.Handle),
 		bot.WithEventListenerFunc(func(*events.Ready) {
-			commands.RegisterCommands(commands.Command_mute, commands.Command_oq, commands.Command_unmute, commands.Command_kick, commands.Command_ban)
+			commands.RegisterCommands(commands.Command_mute, commands.Command_oq, commands.Command_unmute, commands.Command_kick, commands.Command_ban, commands.Command_corner)
 			fmt.Println("Bot is online.")
 		}),
 	)
