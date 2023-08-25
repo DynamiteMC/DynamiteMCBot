@@ -14,8 +14,9 @@ var Command_ban = Command{
 	Permissions: discord.PermissionBanMembers,
 	Aliases:     []string{"banish", "bab", "bam"},
 	Execute: func(message *events.MessageCreate, args []string) {
-		memberId := args[0]
-		durationString := args[1]
+		memberId := GetArgument(args, 0)
+		durationString := GetArgument(args, 1)
+		reason := GetArgument(args, 2)
 		var duration time.Duration
 		if memberId == "" {
 			return
@@ -47,6 +48,10 @@ var Command_ban = Command{
 			CreateMessage(message, Message{Content: "Failed to ban member", Reply: true})
 			return
 		}
-		CreateMessage(message, Message{Content: fmt.Sprintf("Banished member %s.", tag), Reply: true})
+		msg := fmt.Sprintf("Banished member %s.", tag)
+		if reason != "" {
+			msg += fmt.Sprintf("\nReason: `%s`", reason)
+		}
+		CreateMessage(message, Message{Content: msg, Reply: true})
 	},
 }

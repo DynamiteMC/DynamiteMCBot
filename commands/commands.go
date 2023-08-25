@@ -11,6 +11,13 @@ import (
 	"github.com/disgoorg/snowflake/v2"
 )
 
+func GetArgument(args []string, index int) string {
+	if len(args) <= index {
+		return ""
+	}
+	return args[index]
+}
+
 type Command struct {
 	Name        string
 	Description string

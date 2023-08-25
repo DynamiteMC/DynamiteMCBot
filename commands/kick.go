@@ -13,7 +13,7 @@ var Command_kick = Command{
 	Permissions: discord.PermissionKickMembers,
 	Aliases:     []string{"yeet", "kicc"},
 	Execute: func(message *events.MessageCreate, args []string) {
-		memberId := args[0]
+		memberId := GetArgument(args, 0)
 		if memberId == "" {
 			return
 		}

@@ -15,7 +15,7 @@ var Command_corner = Command{
 	Permissions: discord.PermissionManageRoles,
 	Aliases:     []string{"shame", "bully", "blind", "badboy", "lmfao", "didntask", "bruh", "ratio", "cope", "skillissue"},
 	Execute: func(message *events.MessageCreate, args []string) {
-		memberId := args[0]
+		memberId := GetArgument(args, 0)
 		if memberId == "" {
 			return
 		}

@@ -15,7 +15,7 @@ var Command_unmute = Command{
 	Permissions: discord.PermissionMuteMembers,
 	Aliases:     []string{"unsilence", "unshush", "unmoot"},
 	Execute: func(message *events.MessageCreate, args []string) {
-		memberId := args[0]
+		memberId := GetArgument(args, 0)
 		if memberId == "" {
 			return
 		}
