@@ -24,7 +24,7 @@ var Command_corner = Command{
 			CreateMessage(message, Message{Content: "Failed to parse member", Reply: true})
 			return
 		}
-		err := message.Client().Rest().AddMemberRole(*message.GuildID, id, snowflake.ID(config.Config.MuteRole))
+		err := message.Client().Rest().AddMemberRole(*message.GuildID, id, snowflake.ID(config.Config.DisgraceRole))
 		if err != nil {
 			CreateMessage(message, Message{Content: "Failed to mute member", Reply: true})
 			return
