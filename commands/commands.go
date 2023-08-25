@@ -59,7 +59,7 @@ func Handle(message *events.MessageCreate) {
 	if message.Message.Author.Bot {
 		return
 	}
-	if strings.ToLower(message.Message.Content) == "mmm" {
+	if strings.Contains(message.Message.Content, "mmm") {
 		message.Client().Rest().AddReaction(message.ChannelID, message.MessageID, "✅")
 	}
 	args := strings.Split(message.Message.Content, " ")
