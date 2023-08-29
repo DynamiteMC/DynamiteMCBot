@@ -3,6 +3,7 @@ package commands
 import (
 	"fmt"
 	"gobot/config"
+	"gobot/store"
 
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/events"
@@ -28,6 +29,7 @@ var Command_unmute = Command{
 			CreateMessage(message, Message{Content: "Member is not silenced.", Reply: true})
 			return
 		}
+		store.RemoveMuted(int64(id))
 		err := message.Client().Rest().RemoveMemberRole(*message.GuildID, id, snowflake.ID(config.Config.MuteRole))
 		if err != nil {
 			CreateMessage(message, Message{Content: "Failed to unmute member", Reply: true})
