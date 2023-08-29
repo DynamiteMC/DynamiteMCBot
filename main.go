@@ -6,6 +6,7 @@ import (
 
 	"gobot/commands"
 	"gobot/config"
+	"gobot/store"
 	"os"
 	"os/signal"
 	"syscall"
@@ -15,6 +16,7 @@ import (
 	"github.com/disgoorg/disgo/cache"
 	"github.com/disgoorg/disgo/events"
 	"github.com/disgoorg/disgo/gateway"
+	"github.com/disgoorg/snowflake/v2"
 )
 
 func main() {
@@ -34,6 +36,14 @@ func main() {
 			cache.WithCaches(cache.FlagGuilds|cache.FlagRoles),
 		),
 		bot.WithEventListenerFunc(commands.Handle),
+		bot.WithEventListenerFunc(func(event *events.GuildMemberJoin) {
+			if store.IsCornered(int64(event.Member.User.ID)) {
+				event.Client().Rest().AddMemberRole(event.GuildID, event.Member.User.ID, snowflake.ID(config.Config.DisgraceRole))
+			}
+			if store.IsMuted(int64(event.Member.User.ID)) {
+				event.Client().Rest().AddMemberRole(event.GuildID, event.Member.User.ID, snowflake.ID(config.Config.MuteRole))
+			}
+		}),
 		bot.WithEventListenerFunc(func(*events.Ready) {
 			commands.RegisterCommands(commands.Command_mute, commands.Command_oq, commands.Command_unmute, commands.Command_kick, commands.Command_ban, commands.Command_corner)
 			fmt.Println("Bot is online.")

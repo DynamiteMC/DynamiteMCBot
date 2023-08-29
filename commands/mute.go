@@ -3,6 +3,7 @@ package commands
 import (
 	"fmt"
 	"gobot/config"
+	"gobot/store"
 
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/events"
@@ -33,6 +34,7 @@ var Command_mute = Command{
 			CreateMessage(message, Message{Content: "Failed to mute member", Reply: true})
 			return
 		}
+		store.AddMuted(int64(id))
 		var tag string
 		member, err := message.Client().Rest().GetMember(*message.GuildID, id)
 		if err != nil {

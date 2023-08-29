@@ -3,6 +3,7 @@ package commands
 import (
 	"fmt"
 	"gobot/config"
+	"gobot/store"
 
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/events"
@@ -26,9 +27,10 @@ var Command_corner = Command{
 		}
 		err := message.Client().Rest().AddMemberRole(*message.GuildID, id, snowflake.ID(config.Config.DisgraceRole))
 		if err != nil {
-			CreateMessage(message, Message{Content: "Failed to mute member", Reply: true})
+			CreateMessage(message, Message{Content: "Failed to corner member", Reply: true})
 			return
 		}
+		store.AddCornered(int64(id))
 		var tag string
 		member, err := message.Client().Rest().GetMember(*message.GuildID, id)
 		if err != nil {
