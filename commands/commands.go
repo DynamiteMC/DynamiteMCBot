@@ -34,14 +34,14 @@ type Message struct {
 }
 
 func EditMessage(client bot.Client, channelID snowflake.ID, id snowflake.ID, message Message) (*discord.Message, error) {
-	builder := discord.NewMessageUpdateBuilder().SetContent(message.Content).SetEmbeds(message.Embeds...).SetFiles(message.Files...)
+	builder := discord.NewMessageUpdateBuilder().SetContent(message.Content).SetEmbeds(message.Embeds...).SetFiles(message.Files...).SetAllowedMentions(&discord.AllowedMentions{RepliedUser: false})
 	return client.Rest().UpdateMessage(channelID, id, builder.Build())
 }
 
 func CreateMessage(e *events.MessageCreate, message Message) (*discord.Message, error) {
-	builder := discord.NewMessageCreateBuilder().SetContent(message.Content).SetEmbeds(message.Embeds...).SetFiles(message.Files...)
+	builder := discord.NewMessageCreateBuilder().SetContent(message.Content).SetEmbeds(message.Embeds...).SetFiles(message.Files...).SetAllowedMentions(&discord.AllowedMentions{RepliedUser: false})
 	if message.Reply {
-		builder.SetMessageReferenceByID(e.MessageID).SetAllowedMentions(&discord.AllowedMentions{RepliedUser: false})
+		builder.SetMessageReferenceByID(e.MessageID)
 	}
 	return e.Client().Rest().CreateMessage(e.ChannelID, builder.Build())
 }

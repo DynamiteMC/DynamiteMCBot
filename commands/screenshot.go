@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/events"
@@ -20,6 +21,9 @@ var Command_screenshot = Command{
 		if site == "" {
 			return
 		}
+		if !strings.HasPrefix(site, "https://") && !strings.HasPrefix(site, "http://") {
+			site = "http://" + site
+		}
 		if _, e := url.ParseRequestURI(site); e != nil {
 			CreateMessage(message, Message{
 				Content: "Invalid URL!",
@@ -31,7 +35,7 @@ var Command_screenshot = Command{
 			Content: "Screenshotting...",
 			Reply:   true,
 		})
-		exec.Command("chromium", "--headless", "--disable-gpu", "--screenshot", "--window-size=1366,768", site).Run()
+		exec.Command("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", "--headless", "--disable-gpu", "--screenshot", "--window-size=1366,768", site).Run()
 		f, err := os.Open("screenshot.png")
 		if err != nil {
 			EditMessage(message.Client(), msg.ChannelID, msg.ID, Message{
