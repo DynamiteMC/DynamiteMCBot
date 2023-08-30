@@ -27,7 +27,7 @@ var Command_screenshot = Command{
 			})
 		}
 		///Applications/Google Chrome.app/Contents/MacOS/Google Chrome
-		exec.Command("chrome", "--headless", "--disable-gpu", "--screenshot", "--window-size=1920,1080", site).Output()
+		exec.Command("chrome", "--headless", "--disable-gpu", "--screenshot", "--window-size=1920,1080", site).Run()
 		f, err := os.Open("screenshot.png")
 		if err != nil {
 			CreateMessage(message, Message{
