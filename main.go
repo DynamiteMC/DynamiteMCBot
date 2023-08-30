@@ -52,6 +52,7 @@ func main() {
 				commands.Command_ban,
 				commands.Command_corner,
 				commands.Command_screenshot,
+				commands.Command_clean,
 			)
 			fmt.Println("Bot is online.")
 		}),
