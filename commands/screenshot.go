@@ -35,7 +35,7 @@ var Command_screenshot = Command{
 			Content: "Screenshotting...",
 			Reply:   true,
 		})
-		exec.Command("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome", "--headless", "--disable-gpu", "--screenshot", "--window-size=1366,768", site).Run()
+		exec.Command("chromium", "--headless", "--disable-gpu", "--screenshot", "--window-size=1366,768", site).Run()
 		f, err := os.Open("screenshot.png")
 		if err != nil {
 			EditMessage(message.Client(), msg.ChannelID, msg.ID, Message{
