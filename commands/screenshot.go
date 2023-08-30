@@ -15,7 +15,7 @@ var Command_screenshot = Command{
 	Name:        "screenshot",
 	Description: "Screenshot a website",
 	Permissions: discord.PermissionAdministrator,
-	Aliases:     []string{"go", "goto"},
+	Aliases:     []string{"go", "goto", "ss", "screen"},
 	Execute: func(message *events.MessageCreate, args []string) {
 		site := GetArgument(args, 0)
 		if site == "" {
