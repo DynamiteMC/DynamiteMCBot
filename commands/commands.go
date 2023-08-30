@@ -33,6 +33,11 @@ type Message struct {
 	Files   []*discord.File
 }
 
+func EditMessage(client bot.Client, channelID snowflake.ID, id snowflake.ID, message Message) (*discord.Message, error) {
+	builder := discord.NewMessageUpdateBuilder().SetContent(message.Content).SetEmbeds(message.Embeds...).SetFiles(message.Files...)
+	return client.Rest().UpdateMessage(channelID, id, builder.Build())
+}
+
 func CreateMessage(e *events.MessageCreate, message Message) (*discord.Message, error) {
 	builder := discord.NewMessageCreateBuilder().SetContent(message.Content).SetEmbeds(message.Embeds...).SetFiles(message.Files...)
 	if message.Reply {

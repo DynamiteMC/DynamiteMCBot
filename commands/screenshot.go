@@ -25,25 +25,27 @@ var Command_screenshot = Command{
 				Content: "Invalid URL!",
 				Reply:   true,
 			})
+			return
 		}
-		///Applications/Google Chrome.app/Contents/MacOS/Google Chrome
-		exec.Command("chrome", "--headless", "--disable-gpu", "--screenshot", "--window-size=1920,1080", site).Run()
+		msg, _ := CreateMessage(message, Message{
+			Content: "Screenshotting...",
+			Reply:   true,
+		})
+		exec.Command("chromium", "--headless", "--disable-gpu", "--screenshot", "--window-size=1366,768", site).Run()
 		f, err := os.Open("screenshot.png")
 		if err != nil {
-			CreateMessage(message, Message{
+			EditMessage(message.Client(), msg.ChannelID, msg.ID, Message{
 				Content: fmt.Sprintf("Failed to screenshot site: %s", err),
-				Reply:   true,
 			})
 			return
 		}
-		CreateMessage(message, Message{
+		EditMessage(message.Client(), msg.ChannelID, msg.ID, Message{
 			Files: []*discord.File{
 				{
 					Name:   "screenshot.png",
 					Reader: f,
 				},
 			},
-			Reply: true,
 		})
 		f.Close()
 		os.Remove("screenshot.png")
