@@ -10,7 +10,7 @@ import (
 
 var Command_clean = Command{
 	Name:        "clean",
-	Description: "Clean a member",
+	Description: "Clean a channel",
 	Permissions: discord.PermissionManageMessages,
 	Aliases:     []string{"clear", "klean", "klear"},
 	Execute: func(message *events.MessageCreate, args []string) {
