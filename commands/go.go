@@ -201,7 +201,12 @@ var Command_go = Command{
 	Description: "Run Go code",
 	Aliases:     []string{"golang"},
 	Execute: func(message *events.MessageCreate, args []string) {
-		code := ease(parseCodeBlock(strings.Join(args, " ")))
+		src := strings.Join(args, " ")
+		src = strings.TrimSpace(src)
+		if src == "" {
+			return
+		}
+		code := ease(parseCodeBlock(src))
 		ms, _ := CreateMessage(message, Message{
 			Reply:   true,
 			Content: "Running...",
