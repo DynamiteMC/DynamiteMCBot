@@ -35,8 +35,14 @@ var Command_screenshot = Command{
 			Content: "Screenshotting...",
 			Reply:   true,
 		})
-		exec.Command("chromium", "--headless", "--disable-gpu", "--screenshot", "--window-size=1366,768", site).Run()
-		f, err := os.Open("screenshot.png")
+		_, err := exec.Command(`chromium`, "--headless", "--disable-gpu", "--screenshot", "--window-size=1366,768", site).CombinedOutput()
+		if err != nil {
+			EditMessage(message.Client(), msg.ChannelID, msg.ID, Message{
+				Content: fmt.Sprintf("Failed to screenshot site: %s", err),
+			})
+			return
+		}
+		f, err := os.Open(`screenshot.png`)
 		if err != nil {
 			EditMessage(message.Client(), msg.ChannelID, msg.ID, Message{
 				Content: fmt.Sprintf("Failed to screenshot site: %s", err),
@@ -52,6 +58,6 @@ var Command_screenshot = Command{
 			},
 		})
 		f.Close()
-		os.Remove("screenshot.png")
+		os.Remove(`screenshot.png`)
 	},
 }
