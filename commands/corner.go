@@ -30,7 +30,6 @@ var Command_corner = Command{
 			CreateMessage(message, Message{Content: "Failed to corner member", Reply: true})
 			return
 		}
-		store.AddCornered(int64(id))
 		var tag string
 		member, err := message.Client().Rest().GetMember(*message.GuildID, id)
 		if err != nil {
@@ -38,6 +37,16 @@ var Command_corner = Command{
 		} else {
 			tag = member.User.Tag()
 		}
+		var roles []int64
+		for _, role := range member.RoleIDs {
+			if role != snowflake.ID(config.Config.DisgraceRole) {
+				message.Client().Rest().RemoveMemberRole(member.GuildID, id, role)
+				roles = append(roles, int64(role))
+			}
+		}
+		store.AddCornered(int64(id), map[string]interface{}{
+			"roles": roles,
+		})
 		CreateMessage(message, Message{Content: fmt.Sprintf("Sent member %s to go sit in the corner.", tag), Reply: true})
 	},
 }

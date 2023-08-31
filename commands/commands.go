@@ -4,12 +4,39 @@ import (
 	"gobot/config"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/disgoorg/disgo/bot"
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/events"
 	"github.com/disgoorg/snowflake/v2"
 )
+
+var color = 0x9C182C
+var startTime = time.Now()
+var True = true
+
+func Point[T any](data T) *T {
+	return &data
+}
+
+func HasAnyPrefix(str string, prefixes ...string) (bool, string) {
+	for _, s := range prefixes {
+		if strings.HasPrefix(str, s) {
+			return true, s
+		}
+	}
+	return false, ""
+}
+
+func IsAny(str string, strs ...string) (bool, string) {
+	for _, s := range strs {
+		if str == s {
+			return true, s
+		}
+	}
+	return false, ""
+}
 
 func GetArgument(args []string, index int) string {
 	if len(args) <= index {
@@ -34,12 +61,20 @@ type Message struct {
 }
 
 func EditMessage(client bot.Client, channelID snowflake.ID, id snowflake.ID, message Message) (*discord.Message, error) {
-	builder := discord.NewMessageUpdateBuilder().SetContent(message.Content).SetEmbeds(message.Embeds...).SetFiles(message.Files...).SetAllowedMentions(&discord.AllowedMentions{RepliedUser: false})
+	builder := discord.NewMessageUpdateBuilder().
+		SetContent(message.Content).
+		SetEmbeds(message.Embeds...).
+		SetFiles(message.Files...).
+		SetAllowedMentions(&discord.AllowedMentions{RepliedUser: false})
 	return client.Rest().UpdateMessage(channelID, id, builder.Build())
 }
 
 func CreateMessage(e *events.MessageCreate, message Message) (*discord.Message, error) {
-	builder := discord.NewMessageCreateBuilder().SetContent(message.Content).SetEmbeds(message.Embeds...).SetFiles(message.Files...).SetAllowedMentions(&discord.AllowedMentions{RepliedUser: false})
+	builder := discord.NewMessageCreateBuilder().
+		SetContent(message.Content).
+		SetEmbeds(message.Embeds...).
+		SetFiles(message.Files...).
+		SetAllowedMentions(&discord.AllowedMentions{RepliedUser: false})
 	if message.Reply {
 		builder.SetMessageReferenceByID(e.MessageID)
 	}
@@ -75,9 +110,10 @@ func Handle(message *events.MessageCreate) {
 		message.Client().Rest().AddReaction(message.ChannelID, message.MessageID, "✅")
 	}
 	args := strings.Split(message.Message.Content, " ")
-	if !strings.HasPrefix(message.Message.Content, config.Config.Prefix) {
-		if strings.HasPrefix(message.Message.Content, config.Config.InfoPrefix) {
-			cmd := args[0][len(config.Config.InfoPrefix):]
+	if !strings.HasPrefix(message.Message.Content, config.Config.InfoPrefix) {
+		if strings.HasPrefix(message.Message.Content, config.Config.Prefix) {
+			cmd := args[0][len(config.Config.Prefix):]
+			args = args[1:]
 			command := commands[cmd]
 			if command.Execute == nil {
 				command = commands[aliases[cmd]]
@@ -85,12 +121,31 @@ func Handle(message *events.MessageCreate) {
 					return
 				}
 			}
-			aliases := "None"
-			if len(command.Aliases) > 0 {
-				aliases = strings.Join(command.Aliases, ", ")
+			message.Message.Member.GuildID = *message.GuildID
+			if !message.Client().Caches().MemberPermissions(*message.Message.Member).Has(command.Permissions) {
+				return
 			}
-			True := true
-			embed := discord.NewEmbedBuilder().SetTitle(command.Name).SetDescription(command.Description).AddFields(
+			command.Execute(message, args)
+		} else {
+			return
+		}
+	} else {
+		cmd := args[0][len(config.Config.InfoPrefix):]
+		command := commands[cmd]
+		if command.Execute == nil {
+			command = commands[aliases[cmd]]
+			if command.Execute == nil {
+				return
+			}
+		}
+		aliases := "None"
+		if len(command.Aliases) > 0 {
+			aliases = strings.Join(command.Aliases, ", ")
+		}
+		embed := discord.NewEmbedBuilder().
+			SetTitle(command.Name).
+			SetDescription(command.Description).
+			AddFields(
 				discord.EmbedField{
 					Name:   "Aliases",
 					Value:  aliases,
@@ -101,26 +156,8 @@ func Handle(message *events.MessageCreate) {
 					Value:  command.Permissions.String(),
 					Inline: &True,
 				},
-			).Build()
-			CreateMessage(message, Message{Embeds: []discord.Embed{embed}})
-		} else {
-			return
-		}
-	} else {
-		cmd := args[0][len(config.Config.Prefix):]
-		args = args[1:]
-		command := commands[cmd]
-		if command.Execute == nil {
-			command = commands[aliases[cmd]]
-			if command.Execute == nil {
-				return
-			}
-		}
-		message.Message.Member.GuildID = *message.GuildID
-		if !message.Client().Caches().MemberPermissions(*message.Message.Member).Has(command.Permissions) {
-			return
-		}
-		command.Execute(message, args)
+			).SetColor(color).Build()
+		CreateMessage(message, Message{Embeds: []discord.Embed{embed}, Reply: true})
 	}
 }
 

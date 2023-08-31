@@ -8,6 +8,12 @@ require (
 )
 
 require (
+	github.com/andybalholm/cascadia v1.3.1 // indirect
+	golang.org/x/net v0.10.0 // indirect
+)
+
+require (
+	github.com/PuerkitoBio/goquery v1.8.1
 	github.com/disgoorg/json v1.1.0 // indirect
 	github.com/disgoorg/log v1.2.1 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect

@@ -31,13 +31,15 @@ func main() {
 				gateway.IntentGuildMessages,
 				gateway.IntentMessageContent,
 			),
+			gateway.WithBrowser("Discord iOS"),
+			gateway.WithPresenceOpts(gateway.WithCustomActivity("I'm a human")),
 		),
 		bot.WithCacheConfigOpts(
 			cache.WithCaches(cache.FlagGuilds|cache.FlagRoles),
 		),
 		bot.WithEventListenerFunc(commands.Handle),
 		bot.WithEventListenerFunc(func(event *events.GuildMemberJoin) {
-			if store.IsCornered(int64(event.Member.User.ID)) {
+			if c, _ := store.GetCorner(int64(event.Member.User.ID)); c {
 				event.Client().Rest().AddMemberRole(event.GuildID, event.Member.User.ID, snowflake.ID(config.Config.DisgraceRole))
 			}
 			if store.IsMuted(int64(event.Member.User.ID)) {
@@ -53,6 +55,11 @@ func main() {
 				commands.Command_corner,
 				commands.Command_screenshot,
 				commands.Command_clean,
+				commands.Command_uncorner,
+				commands.Command_mcdoc,
+				commands.Command_help,
+				commands.Command_info,
+				commands.Command_go,
 			)
 			fmt.Println("Bot is online.")
 		}),

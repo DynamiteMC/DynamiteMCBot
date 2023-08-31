@@ -9,11 +9,7 @@ import (
 	"strings"
 )
 
-var files = make(map[string]map[string]struct{})
-
-func Point[T any](d T) *T {
-	return &d
-}
+var files = make(map[string]map[string]map[string]interface{})
 
 func writeFile(name string, data []byte) {
 	psp := strings.Split(name, "/")
@@ -23,21 +19,25 @@ func writeFile(name string, data []byte) {
 	os.WriteFile(name, data, 0755)
 }
 
-func read(path string) map[string]struct{} {
-	var output map[string]struct{}
+func read(path string) map[string]map[string]interface{} {
+	var output map[string]map[string]interface{}
 	d, err := os.ReadFile(path)
 	if errors.Is(err, fs.ErrNotExist) {
-		return map[string]struct{}{}
+		return map[string]map[string]interface{}{}
 	}
 	json.Unmarshal(d, &output)
 	return output
 }
 
-func addEntryTo(path string, data string) {
+func addEntryTo(path string, id string, data ...map[string]interface{}) {
 	if files[path] == nil {
 		files[path] = read(path)
 	}
-	files[path][data] = struct{}{}
+	if len(data) > 0 && data[0] != nil {
+		files[path][id] = data[0]
+	} else {
+		files[path][id] = map[string]interface{}{}
+	}
 	d, _ := json.Marshal(files[path])
 	writeFile(path, d)
 }
@@ -51,26 +51,26 @@ func removeEntryFrom(path string, data string) {
 	writeFile(path, d)
 }
 
-func isExist(path string, data string) bool {
+func get(path string, data string) (bool, map[string]interface{}) {
 	if files[path] == nil {
 		files[path] = read(path)
 	}
-	if _, ok := files[path][data]; ok {
-		return true
+	if d, ok := files[path][data]; ok {
+		return true, d
 	}
-	return false
+	return false, nil
 }
 
-func AddCornered(id int64) {
-	addEntryTo("data/cornered.json", fmt.Sprint(id))
+func AddCornered(id int64, data ...map[string]interface{}) {
+	addEntryTo("data/cornered.json", fmt.Sprint(id), data...)
 }
 
 func RemoveCornered(id int64) {
 	removeEntryFrom("data/cornered.json", fmt.Sprint(id))
 }
 
-func IsCornered(id int64) bool {
-	return isExist("data/cornered.json", fmt.Sprint(id))
+func GetCorner(id int64) (bool, map[string]interface{}) {
+	return get("data/cornered.json", fmt.Sprint(id))
 }
 
 func AddMuted(id int64) {
@@ -82,5 +82,6 @@ func RemoveMuted(id int64) {
 }
 
 func IsMuted(id int64) bool {
-	return isExist("data/muted.json", fmt.Sprint(id))
+	d, _ := get("data/muted.json", fmt.Sprint(id))
+	return d
 }
