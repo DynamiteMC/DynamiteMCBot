@@ -60,6 +60,7 @@ func main() {
 				commands.Command_help,
 				commands.Command_info,
 				commands.Command_go,
+				commands.Command_mcplayer,
 			)
 			fmt.Println("Bot is online.")
 		}),

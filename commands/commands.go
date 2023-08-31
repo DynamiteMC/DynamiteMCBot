@@ -112,7 +112,7 @@ func Handle(message *events.MessageCreate) {
 	args := strings.Split(message.Message.Content, " ")
 	if !strings.HasPrefix(message.Message.Content, config.Config.InfoPrefix) {
 		if strings.HasPrefix(message.Message.Content, config.Config.Prefix) {
-			cmd := strings.Split(args[0], "\n")[0][len(config.Config.Prefix):]
+			cmd := strings.ToLower(strings.Split(args[0], "\n")[0][len(config.Config.Prefix):])
 			if len(strings.Split(args[0], "\n")) == 1 {
 				args = args[1:]
 			} else {
