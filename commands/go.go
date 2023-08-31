@@ -3,7 +3,6 @@ package commands
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"strings"
@@ -203,7 +202,6 @@ var Command_go = Command{
 	Aliases:     []string{"golang"},
 	Execute: func(message *events.MessageCreate, args []string) {
 		code := ease(parseCodeBlock(strings.Join(args, " ")))
-		fmt.Println(code)
 		ms, _ := CreateMessage(message, Message{
 			Reply:   true,
 			Content: "Running...",
