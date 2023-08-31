@@ -42,6 +42,6 @@ var Command_unmute = Command{
 		} else {
 			tag = member.User.Tag()
 		}
-		CreateMessage(message, Message{Content: fmt.Sprintf("Unsilence member %s.", tag), Reply: true})
+		CreateMessage(message, Message{Content: fmt.Sprintf("Unsilenced member %s.", tag), Reply: true})
 	},
 }
