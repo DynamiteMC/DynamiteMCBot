@@ -13,7 +13,7 @@ var Command_help = Command{
 	Description: "Show a list of commands",
 	Execute: func(message *events.MessageCreate, args []string) {
 		embed := discord.NewEmbedBuilder().
-			SetTitle("Commands").
+			SetTitlef("Commands (%d)", len(commands)).
 			SetFooterText(fmt.Sprintf("Use %s<command> to get info about a command\n", config.Config.InfoPrefix)).
 			SetColor(color)
 		for _, command := range commands {
