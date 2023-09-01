@@ -64,7 +64,14 @@ var Command_mcping = Command{
 			case "version":
 				{
 					if version, ok := value.(map[string]interface{}); ok {
-						embed.AddField("Version", version["name_clean"].(string), true)
+						name, ok := version["name_clean"].(string)
+						if !ok {
+							name, ok = version["name"].(string)
+						}
+						if !ok {
+							continue
+						}
+						embed.AddField("Version", name, true)
 					}
 				}
 			case "players":
