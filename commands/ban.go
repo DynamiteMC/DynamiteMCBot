@@ -45,7 +45,7 @@ var Command_ban = Command{
 		}
 		err = message.Client().Rest().AddBan(*message.GuildID, id, duration)
 		if err != nil {
-			CreateMessage(message, Message{Content: "Failed to ban member", Reply: true})
+			CreateMessage(message, "Failed to ban member", true)
 			return
 		}
 		msg := fmt.Sprintf("Banished member %s.", tag)

@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"errors"
 	"gobot/config"
 	"strconv"
 	"strings"
@@ -69,16 +70,49 @@ func EditMessage(client bot.Client, channelID snowflake.ID, id snowflake.ID, mes
 	return client.Rest().UpdateMessage(channelID, id, builder.Build())
 }
 
-func CreateMessage(e *events.MessageCreate, message Message) (*discord.Message, error) {
-	builder := discord.NewMessageCreateBuilder().
-		SetContent(message.Content).
-		SetEmbeds(message.Embeds...).
-		SetFiles(message.Files...).
-		SetAllowedMentions(&discord.AllowedMentions{RepliedUser: false})
-	if message.Reply {
-		builder.SetMessageReferenceByID(e.MessageID)
+func CreateMessage(e *events.MessageCreate, msg ...interface{}) (*discord.Message, error) {
+	er := errors.New("invalid arguments")
+	if len(msg) == 0 {
+		return nil, er
 	}
-	return e.Client().Rest().CreateMessage(e.ChannelID, builder.Build())
+	switch message := msg[0].(type) {
+	case Message:
+		{
+			builder := discord.NewMessageCreateBuilder().
+				SetContent(message.Content).
+				SetEmbeds(message.Embeds...).
+				SetFiles(message.Files...).
+				SetAllowedMentions(&discord.AllowedMentions{RepliedUser: false})
+			if message.Reply {
+				builder.SetMessageReferenceByID(e.MessageID)
+			}
+			return e.Client().Rest().CreateMessage(e.ChannelID, builder.Build())
+		}
+	case string:
+		{
+			builder := discord.NewMessageCreateBuilder().
+				SetContent(message).
+				SetAllowedMentions(&discord.AllowedMentions{RepliedUser: false})
+			if len(msg) == 2 && msg[1] == true {
+				builder.SetMessageReferenceByID(e.MessageID)
+			}
+			return e.Client().Rest().CreateMessage(e.ChannelID, builder.Build())
+		}
+	case discord.Embed:
+		{
+			{
+				builder := discord.NewMessageCreateBuilder().
+					SetEmbeds(message).
+					SetAllowedMentions(&discord.AllowedMentions{RepliedUser: false})
+				if len(msg) == 2 && msg[1] == true {
+					builder.SetMessageReferenceByID(e.MessageID)
+				}
+				return e.Client().Rest().CreateMessage(e.ChannelID, builder.Build())
+			}
+		}
+	default:
+		return nil, er
+	}
 }
 
 func HasRole(client bot.Client, guildId snowflake.ID, memberId snowflake.ID, id int64) bool {

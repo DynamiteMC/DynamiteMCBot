@@ -25,16 +25,10 @@ var Command_screenshot = Command{
 			site = "http://" + site
 		}
 		if _, e := url.ParseRequestURI(site); e != nil {
-			CreateMessage(message, Message{
-				Content: "Invalid URL!",
-				Reply:   true,
-			})
+			CreateMessage(message, "Invalid URL!", true)
 			return
 		}
-		msg, _ := CreateMessage(message, Message{
-			Content: "Screenshotting...",
-			Reply:   true,
-		})
+		msg, _ := CreateMessage(message, "Screenshotting...", true)
 		_, err := exec.Command(`chromium`, "--headless", "--disable-gpu", "--screenshot", "--window-size=1366,768", site).CombinedOutput()
 		if err != nil {
 			EditMessage(message.Client(), msg.ChannelID, msg.ID, Message{

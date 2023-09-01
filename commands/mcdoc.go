@@ -26,6 +26,9 @@ var Command_mcdoc = Command{
 			args = args[:len(args)-1]
 		}
 		search = strings.Join(args, " ")
+		if search == "" {
+			return
+		}
 		var title string
 		var url string
 		var description string
@@ -46,10 +49,7 @@ var Command_mcdoc = Command{
 			{
 				resp, err := http.Get("https://wiki.vg/Protocol")
 				if err != nil {
-					CreateMessage(message, Message{
-						Reply:   true,
-						Content: fmt.Sprintf("Couldn't reach wiki.vg: %s", err),
-					})
+					CreateMessage(message, Message{Content: fmt.Sprintf("Couldn't reach wiki.vg: %s", err), Reply: true})
 				}
 				query, _ := goquery.NewDocumentFromReader(resp.Body)
 				var q *html.Node
