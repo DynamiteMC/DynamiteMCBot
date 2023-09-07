@@ -61,6 +61,13 @@ func get(path string, data string) (bool, map[string]interface{}) {
 	return false, nil
 }
 
+func getAll(path string) map[string]map[string]interface{} {
+	if files[path] == nil {
+		files[path] = read(path)
+	}
+	return files[path]
+}
+
 func AddCornered(id int64, data ...map[string]interface{}) {
 	addEntryTo("data/cornered.json", fmt.Sprint(id), data...)
 }
@@ -71,6 +78,14 @@ func RemoveCornered(id int64) {
 
 func GetCorner(id int64) (bool, map[string]interface{}) {
 	return get("data/cornered.json", fmt.Sprint(id))
+}
+
+func GetCorners() map[string]map[string]interface{} {
+	return getAll("data/cornered.json")
+}
+
+func GetMuted() map[string]map[string]interface{} {
+	return getAll("data/muted.json")
 }
 
 func AddMuted(id int64) {
