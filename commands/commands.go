@@ -1,12 +1,17 @@
 package commands
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
 	"gobot/config"
+	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/PuerkitoBio/goquery"
 	"github.com/disgoorg/disgo/bot"
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/events"
@@ -143,6 +148,69 @@ func Handle(message *events.MessageCreate) {
 	if strings.Contains(strings.ToLower(message.Message.Content), "mmm") {
 		message.Client().Rest().AddReaction(message.ChannelID, message.MessageID, "✅")
 	}
+
+	if url, err := url.Parse(message.Message.Content); err == nil {
+		var (
+			repo      string
+			file      string
+			formatter string
+			lineStart int
+			lineEnd   int
+			str       string
+			code      string
+		)
+		if url.Host == "github.com" {
+			sp := strings.Split(url.Path, "/")
+			repo = strings.Join(sp[1:3], "/")
+			if repo != "" {
+				sp := strings.Split(url.Fragment, "-")
+				if len(sp) > 0 {
+					if strings.HasPrefix(sp[0], "L") {
+						l := strings.TrimPrefix(sp[0], "L")
+						lineStart, _ = strconv.Atoi(l)
+					}
+				}
+				if len(sp) > 1 {
+					if strings.HasPrefix(sp[1], "L") {
+						l := strings.TrimPrefix(sp[1], "L")
+						lineEnd, _ = strconv.Atoi(l)
+					}
+				}
+				res, _ := http.Get(url.String())
+				q, _ := goquery.NewDocumentFromReader(res.Body)
+				s := q.Find("react-app").Children().First()
+				c, _ := s.Html()
+				var data map[string]interface{}
+				err := json.Unmarshal([]byte(strings.ReplaceAll(c, "&#34;", `"`)), &data)
+				if err == nil {
+					pl := data["payload"].(map[string]interface{})["blob"].(map[string]interface{})
+					file = pl["displayName"].(string)
+					fsp := strings.Split(file, ".")
+					formatter = fsp[len(fsp)-1]
+					var lines []interface{}
+					if lineEnd != 0 {
+						lines = pl["rawLines"].([]interface{})[lineStart-1 : lineEnd]
+					} else {
+						lines = pl["rawLines"].([]interface{})[lineStart-1 : lineStart]
+					}
+					for i, l := range lines {
+						code += fmt.Sprint(l)
+						if i != len(lines)-1 {
+							code += "\n"
+						}
+					}
+				}
+			}
+			if lineStart != 0 && code != "" {
+				str = fmt.Sprintf("**%s %s**\nLine **%d**:\n```%s\n%s```", repo, file, lineStart, formatter, code)
+				if lineEnd != 0 {
+					str = fmt.Sprintf("**%s %s**\nLines **%d** - **%d**:\n```%s\n%s```", repo, file, lineStart, lineEnd, formatter, code)
+				}
+				CreateMessage(message, str, true)
+			}
+		}
+	}
+
 	args := strings.Split(message.Message.Content, " ")
 	if !strings.HasPrefix(message.Message.Content, config.Config.InfoPrefix) {
 		if strings.HasPrefix(message.Message.Content, config.Config.Prefix) {
