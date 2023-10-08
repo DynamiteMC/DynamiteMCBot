@@ -12,6 +12,7 @@ type ConfigS struct {
 	InfoPrefix   string `json:"info_prefix"`
 	MuteRole     int64  `json:"mute_role"`
 	DisgraceRole int64  `json:"disgrace_role"`
+	OpenAIKey    string `json:"open_ai_key"`
 }
 
 var Config ConfigS

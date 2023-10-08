@@ -8,7 +8,10 @@ require (
 	golang.org/x/net v0.10.0
 )
 
-require github.com/andybalholm/cascadia v1.3.1 // indirect
+require (
+	github.com/andybalholm/cascadia v1.3.1 // indirect
+	github.com/ayush6624/go-chatgpt v0.3.0 // indirect
+)
 
 require (
 	github.com/PuerkitoBio/goquery v1.8.1

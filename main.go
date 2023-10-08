@@ -11,6 +11,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/ayush6624/go-chatgpt"
 	"github.com/disgoorg/disgo"
 	"github.com/disgoorg/disgo/bot"
 	"github.com/disgoorg/disgo/cache"
@@ -24,6 +25,7 @@ func main() {
 		fmt.Println("Please fill the config.json file then run the program again")
 		os.Exit(1)
 	}
+	c, _ := chatgpt.NewClient(config.Config.OpenAIKey)
 	client, err := disgo.New(config.Config.Token,
 		bot.WithGatewayConfigOpts(
 			gateway.WithIntents(
@@ -37,7 +39,9 @@ func main() {
 		bot.WithCacheConfigOpts(
 			cache.WithCaches(cache.FlagGuilds|cache.FlagRoles),
 		),
-		bot.WithEventListenerFunc(commands.Handle),
+		bot.WithEventListenerFunc(func(m *events.MessageCreate) {
+			commands.Handle(c, m)
+		}),
 		bot.WithEventListenerFunc(func(event *events.GuildMemberJoin) {
 			if c, _ := store.GetCorner(int64(event.Member.User.ID)); c {
 				event.Client().Rest().AddMemberRole(event.GuildID, event.Member.User.ID, snowflake.ID(config.Config.DisgraceRole))
@@ -64,6 +68,7 @@ func main() {
 				commands.Command_mcplayer,
 				commands.Command_mcping,
 				commands.Command_fetchdb,
+				commands.Command_fancify,
 			)
 			fmt.Println("Bot is online.")
 		}),

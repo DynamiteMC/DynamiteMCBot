@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
+	"github.com/ayush6624/go-chatgpt"
 	"github.com/disgoorg/disgo/bot"
 	"github.com/disgoorg/disgo/discord"
 	"github.com/disgoorg/disgo/events"
@@ -141,7 +142,10 @@ func ParseMention(mention string) snowflake.ID {
 	return snowflake.ID(id)
 }
 
-func Handle(message *events.MessageCreate) {
+var openaiClient *chatgpt.Client
+
+func Handle(aic *chatgpt.Client, message *events.MessageCreate) {
+	openaiClient = aic
 	if message.Message.Author.Bot {
 		return
 	}
