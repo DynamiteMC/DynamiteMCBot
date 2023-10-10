@@ -31,8 +31,8 @@ var Command_clean = Command{
 		}
 		memberId := GetArgument(args, 1)
 		if memberId == "" {
-			if message.Message.MessageReference != nil {
-				memberId = message.Message.MessageReference.MessageID.String()
+			if message.Message.ReferencedMessage != nil {
+				memberId = message.Message.ReferencedMessage.Author.ID.String()
 			}
 		}
 		id := ParseMention(memberId)

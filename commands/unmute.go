@@ -18,8 +18,8 @@ var Command_unmute = Command{
 	Execute: func(message *events.MessageCreate, args []string) {
 		memberId := GetArgument(args, 0)
 		if memberId == "" {
-			if message.Message.MessageReference != nil {
-				memberId = message.Message.MessageReference.MessageID.String()
+			if message.Message.ReferencedMessage != nil {
+				memberId = message.Message.ReferencedMessage.Author.ID.String()
 			} else {
 				memberId = message.Message.Author.ID.String()
 			}
