@@ -30,6 +30,11 @@ var Command_clean = Command{
 			return
 		}
 		memberId := GetArgument(args, 1)
+		if memberId == "" {
+			if message.Message.MessageReference != nil {
+				memberId = message.Message.MessageReference.MessageID.String()
+			}
+		}
 		id := ParseMention(memberId)
 		var messages []snowflake.ID
 		msgs, _ := message.Client().Rest().GetMessages(message.ChannelID, 0, message.MessageID, 0, amount)
