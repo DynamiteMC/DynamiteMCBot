@@ -254,6 +254,11 @@ func Handle(aic *chatgpt.Client, message *events.MessageCreate) {
 	var str []string
 	for _, c := range strings.Split(message.Message.Content, " ") {
 		if a, ok := ac[strings.ToLower(c)]; ok {
+			for _, s := range str {
+				if s == a {
+					continue
+				}
+			}
 			str = append(str, a)
 		}
 	}
