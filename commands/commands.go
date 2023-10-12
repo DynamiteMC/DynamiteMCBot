@@ -19,6 +19,37 @@ import (
 	"github.com/disgoorg/snowflake/v2"
 )
 
+var ac = map[string]string{
+	"bios": "Basic Input/Output System",
+	"mcpe": "Minecraft Pocket Edition",
+	"ram":  "Random Access Memory",
+	"rom":  "Read Only Memory",
+	"ssd":  "Solid State Drive",
+	"hdd":  "Hard Disk Drive",
+	"nyc":  "New York City",
+	"aws":  "Amazon Web Services",
+	"ai":   "Artificial Intelligence",
+	"wifi": "Wireless Fidelity",
+	"pc":   "Personal Computer",
+	"gn":   "Good Night",
+	"gm":   "Good Morning",
+	"dp":   "Display Port",
+	"hdmi": "High Definition Multimedia Interface",
+	"pdf":  "Personal Document Format",
+	"sata": "Serial Advanced Technology Attachment",
+	"pci":  "Peripheral Component Interconnect",
+	"pcie": "Peripheral Component Interconnect Express",
+	"nvme": "Non-Volatile Memory Express",
+	"tcp":  "Transmission Control Protocol",
+	"udp":  "User Datagram Protocol",
+	"www":  "World Wide Web",
+	"http": "Hypertext Transfer Protocol",
+	"js":   "JavaScript",
+	"ts":   "TypeScript",
+	"py":   "Python",
+	"lol":  "Laugh Out Loud",
+}
+
 var color = 0x9C182C
 var startTime = time.Now()
 var True = true
@@ -153,7 +184,7 @@ func Handle(aic *chatgpt.Client, message *events.MessageCreate) {
 		message.Client().Rest().AddReaction(message.ChannelID, message.MessageID, "✅")
 	}
 
-	u, err := url.Parse(message.Message.Content)
+	u, err := url.ParseRequestURI(message.Message.Content)
 
 	if err == nil {
 		var (
@@ -218,6 +249,17 @@ func Handle(aic *chatgpt.Client, message *events.MessageCreate) {
 				}
 			}
 		}
+	}
+
+	var str []string
+	for _, c := range strings.Split(message.Message.Content, " ") {
+		if a, ok := ac[strings.ToLower(c)]; ok {
+			str = append(str, a)
+		}
+	}
+
+	if len(str) != 0 {
+		CreateMessage(message, fmt.Sprintf("(%s)", strings.Join(str, ", ")), true)
 	}
 
 	args := strings.Split(message.Message.Content, " ")
