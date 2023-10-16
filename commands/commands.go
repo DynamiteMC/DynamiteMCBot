@@ -184,6 +184,16 @@ func Handle(aic *chatgpt.Client, message *events.MessageCreate) {
 		message.Client().Rest().AddReaction(message.ChannelID, message.MessageID, "✅")
 	}
 
+	if message.Message.Content == "no!" {
+		ref := message.Message.ReferencedMessage
+		if ref != nil {
+			if ref.Author.ID == message.Client().ID() {
+				message.Client().Rest().DeleteMessage(message.ChannelID, message.MessageID)
+				message.Client().Rest().DeleteMessage(message.ChannelID, ref.ID)
+			}
+		}
+	}
+
 	u, err := url.ParseRequestURI(message.Message.Content)
 
 	if err == nil {
