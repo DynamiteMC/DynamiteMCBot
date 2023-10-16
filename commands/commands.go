@@ -188,8 +188,11 @@ func Handle(aic *chatgpt.Client, message *events.MessageCreate) {
 		ref := message.Message.ReferencedMessage
 		if ref != nil {
 			if ref.Author.ID == message.Client().ID() {
-				message.Client().Rest().DeleteMessage(message.ChannelID, message.MessageID)
-				message.Client().Rest().DeleteMessage(message.ChannelID, ref.ID)
+				ref1 := ref.ReferencedMessage
+				if ref1 != nil && ref1.Author.ID == message.Message.Author.ID {
+					message.Client().Rest().DeleteMessage(message.ChannelID, message.MessageID)
+					message.Client().Rest().DeleteMessage(message.ChannelID, ref.ID)
+				}
 			}
 		}
 	}
