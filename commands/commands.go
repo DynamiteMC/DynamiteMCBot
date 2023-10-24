@@ -252,7 +252,6 @@ func Handle(aic *chatgpt.Client, message *events.MessageCreate) {
 						}
 					}
 				}
-				fmt.Println(lineStart, lineEnd, code)
 				if lineStart != 0 && code != "" {
 					str = fmt.Sprintf("**%s %s**\nLine **%d**:\n```%s\n%s```", repo, file, lineStart, formatter, code)
 					if lineEnd != 0 {
