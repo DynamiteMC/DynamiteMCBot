@@ -81,7 +81,6 @@ func Connect(client bot.Client, config config.ConfigS) {
 		case "log":
 			var log Log
 			json.Unmarshal([]byte(m.Data.(string)), &log)
-			var typ string
 
 			switch log.Type {
 			case "info":
@@ -97,8 +96,6 @@ func Connect(client bot.Client, config config.ConfigS) {
 				json.Unmarshal([]byte(log.Message), &ms)
 				msg += parseChat(ms) + "\n"
 			}
-
-			msg += fmt.Sprintf("\u001b[0;30m%s %s\u001b[37;0m: %s\n", log.Time, typ, log.Message)
 			d := fmt.Sprintf("```ansi\n%s\n```", msg)
 			client.Rest().UpdateMessage(snowflake.ID(config.DynamiteLogChannel), msgid, discord.MessageUpdate{
 				Content: &d,
