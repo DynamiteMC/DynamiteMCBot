@@ -13,6 +13,7 @@ require github.com/andybalholm/cascadia v1.3.1 // indirect
 
 require (
 	github.com/PuerkitoBio/goquery v1.8.1
+	github.com/aimjel/minecraft v0.0.0-20231018010339-ffdf538fd9f2
 	github.com/disgoorg/json v1.1.0 // indirect
 	github.com/disgoorg/log v1.2.1 // indirect
 	github.com/google/uuid v1.3.1

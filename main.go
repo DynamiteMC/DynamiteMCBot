@@ -7,6 +7,7 @@ import (
 	"gobot/commands"
 	"gobot/config"
 	"gobot/store"
+	"gobot/web"
 	"os"
 	"os/signal"
 	"syscall"
@@ -50,7 +51,10 @@ func main() {
 				event.Client().Rest().AddMemberRole(event.GuildID, event.Member.User.ID, snowflake.ID(config.Config.MuteRole))
 			}
 		}),
-		bot.WithEventListenerFunc(func(*events.Ready) {
+		bot.WithEventListenerFunc(func(e *events.Ready) {
+			if config.Config.DynamiteServer != "" {
+				go web.Connect(e.Client(), config.Config)
+			}
 			commands.RegisterCommands(
 				commands.Command_mute,
 				commands.Command_oq,
