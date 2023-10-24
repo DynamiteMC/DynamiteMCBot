@@ -85,18 +85,19 @@ func Connect(client bot.Client, config config.ConfigS) {
 
 			switch log.Type {
 			case "info":
-				typ = "\u001b[0;34mINFO"
+				msg += fmt.Sprintf("\u001b[0;30m%s \u001b[0;34mINFO\u001b[37;0m: %s\n", log.Time, log.Message)
 			case "debug":
-				typ = "\u001b[0;36mDEBUG"
+				msg += fmt.Sprintf("\u001b[0;30m%s \u001b[0;36mDEBUG\u001b[37;0m: %s\n", log.Time, log.Message)
 			case "warn":
-				typ = "\u001b[0;33mWARN"
+				msg += fmt.Sprintf("\u001b[0;30m%s \u001b[0;33mDEBUG\u001b[37;0m: %s\n", log.Time, log.Message)
 			case "error":
-				typ = "\u001b[0;31mERROR"
+				msg += fmt.Sprintf("\u001b[0;30m%s \u001b[0;31mDEBUG\u001b[37;0m: %s\n", log.Time, log.Message)
 			case "chat":
 				var ms chat.Message
 				json.Unmarshal([]byte(log.Message), &ms)
 				msg += parseChat(ms) + "\n"
 			}
+
 			msg += fmt.Sprintf("\u001b[0;30m%s %s\u001b[37;0m: %s\n", log.Time, typ, log.Message)
 			d := fmt.Sprintf("```ansi\n%s\n```", msg)
 			client.Rest().UpdateMessage(snowflake.ID(config.DynamiteLogChannel), msgid, discord.MessageUpdate{
